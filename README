@@ -1,0 +1,17 @@
+A hobby project for setting up a university email-account login based speedating site. "Speedating" occurs through Omegele or Chat-Roulette style random text chatting. Identities are all anonymous and the login is only required to verify the existence of the university email account.  Contact information of upto 3 people may be saved for a period of up to 3 weeks.
+
+The stack I am using consists of Flask a Python lightweight web framework, JQuery for a Javascript library, Prosody for an XMPP server, xmpppy for a Python xmpp implementation, sqlite3 for DB support, and Twitter bootstrap for theming/widget purposes.
+
+Current Progress:
+
+-- XMPP Server Setup Done
+-- XMPP Client/Server Interaction Done
+-- Random Webchat Done
+-- Connection negotiation Done
+
+TODO:
+
+-- Theming
+-- XMPP Random Username cleanup
+-- Random Contact Info Saving
+-- Messaging
