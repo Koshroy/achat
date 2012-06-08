@@ -1,0 +1,32 @@
+<head>
+
+  <script type="text/javascript" src="/static/jquery-1.7.2.min.js">
+ <script type="text/javascript">
+    function clearDomainInput(e) {
+      if (e.cleared) { return; }
+      e.cleared = true;
+      e.value = '';
+      e.style.color = '#000';
+    }
+    </script>
+    <script type="text/javascript">
+      function formSubmit()
+      {
+	  $("chatform").submit();
+      }
+    </script>
+
+  </head>
+
+<body>
+
+<form method="get" name="chatform" action="/chatstart" onsubmit="return formSubmit()">
+  I'm a 
+  <input type="text" name="domain" id="you_are" value="boy" onclick="clearDomainInput(this);" />
+  looking for a
+  <input type="text" name="domain" id="you_want" value="girl" onclick="clearDomainInput(this);" />
+  <a href="#" onclick="formSubmit();">to chat with</a>
+  <input type="submit" style="display: none;" />
+</form>
+
+</body>

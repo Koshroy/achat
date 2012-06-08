@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  { % if user % }
+  Welcome {{ user }}
+  <form id="logoutform" method="post">
+    <div class id="divrow"><input type="submit" value="Logout" /></div>
+  </form>
+  { % else % }
+  You are not }
+</html>

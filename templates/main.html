@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  {% if user %}
+  Welcome {{ user }}
+  <form id="logoutform" method="post" action="/logout">
+    <div class id="divrow"><input type="submit" value="Logout" /></div>
+  </form>
+  {% else %}
+  You are not <a href="/login">logged in</a>!
+  {% endif %}
+</html>

@@ -1,0 +1,4 @@
+<!DOCTYPE html>
+<html>
+  <div style="overflow: scroll" name="chat" id="chatdiv"></div>
+</html>

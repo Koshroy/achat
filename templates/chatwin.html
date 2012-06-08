@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.2.min.js') }}"></script>
+    <script type="text/javascript" src="/static/chatwin.js"></script>
+  </head>
+
+  <body>
+    {% if user %}
+  <div name="hilo" id="conn_status"></div>
+  <div style="overflow: scroll" name="chat" id="chatdiv">
+    <p>Person 1: uguuu</p>
+    <p>Person 2: uhuuu</p>
+  </div>
+  <div name="userinputdiv" id="userdiv">
+    <table><tr><td>
+    <form id="chatform">
+      <input id="chatbox" name="userinput" type="text" value="chat here" />
+      <input id="uniq_id" type="hidden" value="{{ uid }}" />
+    </form></td>
+    <td><input id="dcon" type="button" onclick="return disconnect()" value="Disconnect" /></td></tr></table>
+  </div>
+  {% else %}
+  You are not <a href="/login">logged in</a>!
+  {% endif %}
+  </body>
+</html>
