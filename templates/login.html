@@ -2,19 +2,60 @@
 <html>
 
 <head>
-<script type="text/javascript" src="/static/jquery-1.7.2.min.js"></script>
+
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+<style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+</style>
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
 
 </head>
 
 <body>
 
-<h1>Login</h1>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">SpeedChatting</a>
+      <div class="nav-collapse">
+	<ul class="nav">
+	  <li class="active"><a href="{{ url_for('hello_world') }}">Home</a></li>
+	  <li><a href="{{ url_for('login') }}">Login</a></li>
+	</ul>
+      </div>
+    </div>
+  </div>
+</div>
 
-<form id="loginform" method="post">
-<div class="formrow"><label id="user">Username:</label> <input type="text" name="user" id="user"></div>
-<div class="formrow"><label id="pass">Password:</label> <input type="password" name="pass" id="pass"></div>
-<div class="formrow"><input type="submit" value="Login" /></div>
-</form>
+<div class="container">
+  <div id="messenger"></div>
+  <div class="page-header">
+    <h1>Login</h1>
+  </div>
+
+  <fieldset>
+    <div class="row">
+      <div class="span6 well">
+	<form id="loginform" method="post">
+	  <div class="input text required">
+	    <label for="username" id="user">Email</label>
+	    <input type="text" name="user" id="user" placeholder="netid@illinois.edu"/>
+	  </div>
+	  
+	  <div class="input password required">
+	    <label for="password" class="required" id="pass">Password</label>
+	    <input type="password" name="pass" id="pass" />
+	  </div>
+	  <button type="submit" class="btn btn-primary">Login</button>
+	</form>
+      </div>
+    </div>
+  </fieldset>
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.2.min.js') }}"></script>
 
 </body>
 
