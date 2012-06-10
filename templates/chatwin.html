@@ -1,25 +1,71 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.2.min.js') }}"></script>
-    <script type="text/javascript" src="/static/chatwin.js"></script>
-  </head>
 
-  <body>
-    {% if user %}
-  <div name="hilo" id="conn_status"></div>
-  <div style="overflow: scroll" name="chat" id="chatdiv">
-    <p>Person 1: uguuu</p>
-    <p>Person 2: uhuuu</p>
+<head>
+
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+<style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+</style>
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">SpeedChatting</a>
+      <div class="nav-collapse">
+	<ul class="nav">
+	  <li><a href="{{ url_for('hello_world') }}">Home</a></li>
+	  <li><a href="{{ url_for('login') }}">Login</a></li>
+	  <li class="active"><a href="{{ url_for('chat') }}">Chat</a></li>
+	</ul>
+      </div>
+    </div>
   </div>
-  <div name="userinputdiv" id="userdiv">
-    <table><tr><td>
-    <form id="chatform">
-      <input id="chatbox" name="userinput" type="text" value="chat here" />
+</div>
+
+{% if user %}
+<div class="row">
+  <div class="span8">
+    <div name="hilo" id="conn_status"></div>
+    <div name="chat" id="chatdiv">
+      <table id="chatarea" class="table table-striped">
+	<colgroup>
+	  <col class="span1" />
+	  <col class="span7" />
+	</colgroup>
+	<tbody>
+	<tr><td>Person 1</td><td>uguuu</td></tr>
+	<tr><td>Person 2</td><td>uhuuu</td></tr>
+	</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="span8" name="userinputdiv" id="userdiv">
+    <form class="form-horizontal" id="chatform">
+      <!-- <input id="chatbox" name="userinput" type="text" class="input-xlarge" placeholder="Start chatting here!" /> -->
+      <textarea class="input-xlarge" id="chatbox" rows="3"></textarea>
       <input id="uniq_id" type="hidden" value="{{ uid }}" />
-    </form></td>
-    <td><input id="dcon" type="button" onclick="return disconnect()" value="Disconnect" /></td></tr></table>
+    <!-- </form> -->
+    <!-- <input id="dcon" class="btn" type="button" onclick="return disconnect()" value="Disconnect" /> -->
+    <button type="button" id="dcon" class="btn btn-large" onclick="return disconnect()"">Disconnect</button>
+    </form>
   </div>
+</div>
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.2.min.js') }}"></script>
+  <!-- <script type="text/javascript" src="/static/chatwin.js"></script> -->
+
+
   {% else %}
   You are not <a href="/login">logged in</a>!
   {% endif %}
