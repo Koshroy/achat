@@ -39,7 +39,7 @@ def gen_id():
 
 @app.route('/')
 def hello_world():
-    return render_template('main.html', user=session.get('username', None))
+    return render_template('home.html', user=session.get('username', None))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -30,7 +30,7 @@ function initFunc()
 			   }
 			   else {
 			       if (data.text != '') {
-				   addToChat("Person 2: " + data.text);
+				   addToChat("Person 2", data.text);
 			       }
 			   }
 		       }
@@ -72,10 +72,10 @@ function tryConnect()
 	  );
 }
 
-function addToChat(s)
+function addToChat(id, s)
 {
-    var h = $("#chatdiv").html();
-    $("#chatdiv").html(h + "<p>"+s+"</p>");
+    var h = $("#chatarea").html();
+    $("#chatarea").html(h + "<tr><td>"+id+"</td><td>"+s+"</td></tr>");
 }
 
 function dispStatus(s)
@@ -85,8 +85,7 @@ function dispStatus(s)
 
 function clearBox()
 {
-    var h = $("#chatdiv").html();
-    addToChat("Person 1: " + $("#chatbox").val());
+    addToChat("Person 1", $("#chatbox").val());
     $("#chatbox").val("");
 }
 
