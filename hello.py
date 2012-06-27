@@ -2,6 +2,7 @@ from flask import Flask, url_for, render_template, session, escape, request, red
 from contextlib import closing
 from random import choice
 import os, sqlite3, xmpp, string
+import reddis
 
 DATABASE = '/Users/koshroy/tmp/achat.db'
 SECRET_KEY = 'Z;t\x02\x9eB\x91\xac\xd3\x98\xd8\xc6\xbc@%\xda\x95\x13\xaeJ\xed"\xcfT'
@@ -30,7 +31,7 @@ def gen_id():
 
 # @app.before_request
 # def before_request():
-#     return ''
+#     g.r = connect_r()
 
 # @app.teardown_request
 # def teardown_request(exception):
@@ -160,6 +161,21 @@ def chatConn():
         db.commit()
         db.close()
         return 'connected'
+
+@app.route('/formtest')
+def formTest():
+    topics = request.args.get('topics', '').split(',')
+
+# @app.route('/chatreq', methods = ['POST'] )
+# def chatreq():
+#     new_id = gen_id()
+#     session['uniq_id'] = new_id
+#     id_num = g.r.incr('new_user_id') - 1
+#     g.r.set('id::'+new_id, id_num)
+
+#     g.r.sadd('user::'+id_num+'::')
+    
+    
                 
 
 def messageCB(conn, msg):
@@ -168,4 +184,6 @@ def messageCB(conn, msg):
 
         
 if __name__ == "__main__":
+    g.r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    g.r.set('new_user_id', '0')
     app.run()
