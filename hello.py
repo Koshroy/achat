@@ -2,12 +2,16 @@ from flask import Flask, url_for, render_template, session, escape, request, red
 from contextlib import closing
 from random import choice
 import os, sqlite3, xmpp, string
-import reddis
+import redis
+import user_status, chat_data
 
 DATABASE = '/Users/koshroy/tmp/achat.db'
 SECRET_KEY = 'Z;t\x02\x9eB\x91\xac\xd3\x98\xd8\xc6\xbc@%\xda\x95\x13\xaeJ\xed"\xcfT'
 DEBUG = True
 
+STATUS_WAIT = 0
+STATUS_CONN = 1
+STATUS_DCON = 2
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -63,24 +67,23 @@ def chat():
 
 @app.route('/sendmsg', methods=['POST'])
 def sendmsg():
-    db = connect_db()
-    pid = request.form['uniq_id']
-    db_resp = db.execute("select personaid, personbid, disconnected from chats where personaid='%s' or personbid='%s'"%(pid, pid))
-    entries = db_resp.fetchall()
-    if len(entries) == 0:
-        db.close()
-        return 'error'
-    to_pid = 'uguuu'
-    entry = entries[0]
-    if entry[2] == 1:
-        db.close()
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    uid = request.form['uniq_id']
+    if user_status.User_status.get_conn_status(r, uid) == STATUS_DCON:
         return 'disconnected'
-    elif entry[0] == pid:
-        to_pid = entry[1]
+    user_status.User_status.get_chat(r, uid)
+    rid = user_status.User_status.get_rid(r, uid)
+    cid = user_status.User_status.get_chat(r, rid)
+
+    rid_list = chat_data.Chat_data.get_both_uids(r, cid)
+    #uid_list = [user_status.User_status.get_uid(r, rid_list[0]), user_status.User_status.get_uid(r, rid_list[1])]
+    uid_list =  map(lambda rid: user_status.User_status.get_uid(r, str(rid)), chat_data.Chat_data.get_both_uids(r, cid))
+    if uid_list[0] == uid:
+        to_uid = uid_list[1]
     else:
-        to_pid = entry[0]
-    db.close()
-    jid = xmpp.protocol.JID(pid+'@localhost')
+        to_uid = uid_list[0]
+
+    jid = xmpp.protocol.JID(uid+'@localhost')
     x = xmpp.Client(jid.getDomain(), debug=[])
     x.connect()
     xmpp.features.getRegInfo(x, jid.getDomain(), sync=True)
@@ -88,22 +91,22 @@ def sendmsg():
                                       {'username':jid.getNode(),
                                        'password':'abcd'})
     x.auth(jid.getNode(), 'abcd')
-    x.send(xmpp.protocol.Message(to_pid+'@localhost', request.form['message']))
+    x.send(xmpp.protocol.Message(to_uid+'@localhost', request.form['message']))
     x.disconnect()
     return 'registered? ' + str(reg_succ) + '\n' + request.form['uniq_id']+'@localhost'
 
+
+    
+
 @app.route('/recvmsg', methods=['POST'])
 def recvmsg():
-    pid = request.form['uniq_id']
-    db = connect_db()
-    db_resp = db.execute("select disconnected from chats where personaid='%s' or personbid='%s'"%(pid, pid))
-    entries = db_resp.fetchall()
-    if len(entries) != 0:
-        dcon_status = entries[0][0]
-        db.close()
-        if dcon_status == 1:
-            return jsonify(msg='event', text='stopped')
-    jid = xmpp.protocol.JID(request.form['uniq_id']+'@localhost')
+    uid = request.form['uniq_id']
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    rid = user_status.User_status.get_rid(r, uid)
+    c_status = user_status.User_status.get_conn_status(r, rid)
+    if (c_status == str(STATUS_DCON)):
+        return jsonify(msg='event', text='stopped')
+    jid = xmpp.protocol.JID(uid+'@localhost')
     x = xmpp.Client(jid.getDomain(), debug=[])
     x.connect()
     xmpp.features.getRegInfo(x, jid.getDomain(), sync=True)
@@ -117,50 +120,49 @@ def recvmsg():
     x.Process(1)
     x.disconnect()
     return jsonify(msg='chat', text=session.get('r_msg', ''))
+    
+
+
+    
+    
 
 @app.route('/chatconnect', methods=['POST'])
 def chatConn():
-    pid = request.form['uniq_id']
-    db = connect_db()
-    if request.form['req'] == "stop":
-        db_resp = db.execute("select id from chats where personaid='%s' or personbid='%s'" %(pid, pid))
-        dc_pids = db_resp.fetchall()
-        if len(dc_pids) == 0:
-            db.close()
+    uid = request.form['uniq_id']
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+    if request.form['req'] == 'start':
+        rid = user_status.User_status.get_rid(r, uid)
+        if rid is None:
+            u = user_status.User_status(uid=uid, gender_self=request.form.get('gender_self', ''), gender_target=request.form.get('gender_target'), lat=request.form.get('lat', ''), lng=request.form.get('lng', ''))
+            u.store(r)
+            return 'waiting'
+
+        w_users = user_status.get_waiting_users(r)
+        if rid in w_users:
+            return 'waiting'
+
+        status = int(user_status.User_status.get_conn_status(r, rid))
+        if status == STATUS_DCON:
+            return 'stopped'
+        elif status == STATUS_CONN:
+            return 'connected'
+        else:
+            return 'herped: ' + str(status)
+    elif request.form['req'] == 'stop':
+        rid = user_status.User_status.get_rid(r, uid)
+        if rid is None:
             return 'error'
-        entry = int(dc_pids[0][0])
-        db.execute("update chats set disconnected=1 where id=%d"%entry)
-        db.commit()
-        db.close()
-        return 'success'
+        else:
+            rid = int(rid)
+            cid = user_status.User_status.get_chat(r, rid)
+            rid_list = chat_data.Chat_data.get_both_uids(r, cid)
+            for rid_chat in rid_list:
+                user_status.User_status.store_conn_status(r, rid_chat, STATUS_DCON)
+            chat_data.Chat_data.set_conn_status(r, cid, STATUS_DCON)
+            return 'success'
+
     
-    db_resp = db.execute("select personaid, personbid, chatopen, disconnected from chats where personaid='%s' or personbid='%s'" %(pid, pid))
-    req_pids = db_resp.fetchall()
-    if len(req_pids) != 0: # We have a chat with our name registered
-        for res in req_pids:
-            if res[3] == 1:
-                db.close()
-                return 'stopped'
-            elif res[2] == 0:
-                #db.execute("update chats set chatopen=0 where id=%d"%int(res[3]))
-                db.close()
-                return 'connected'
-            else:
-                db.close()
-                return 'waiting'
-    db_resp = db.execute("select * from chats where chatopen=1")
-    open_chats = db_resp.fetchall()
-    if len(open_chats) == 0:
-        db.execute("insert into chats (chatopen, personaid, personbid, gendera, genderb, disconnected) values (1, '%s', '', 0, 0, 0)"%pid)
-        db.commit()
-        db.close()
-        return 'waiting'
-    else:
-        min_id = min([req[0] for req in open_chats])
-        db.execute("update chats set personbid='%s', chatopen=0 where id=%d"%(pid, min_id))
-        db.commit()
-        db.close()
-        return 'connected'
 
 @app.route('/formtest')
 def formTest():
@@ -184,6 +186,4 @@ def messageCB(conn, msg):
 
         
 if __name__ == "__main__":
-    g.r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    g.r.set('new_user_id', '0')
     app.run()

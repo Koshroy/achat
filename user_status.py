@@ -1,5 +1,10 @@
 import redis_serialized
 
+STATUS_WAIT = 0
+STATUS_CONN = 1
+STATUS_DCON = 2
+
+
 class User_status(redis_serialized.Redis_serialized):
     def __init__(self, **kwargs):
         super(User_status, self).__init__('user_status', 'user_count', kwargs)
@@ -9,9 +14,9 @@ class User_status(redis_serialized.Redis_serialized):
                            'lat' : kwargs.get('lat', ''),\
                            'lng': kwargs.get('lng'),\
                            'chat_id' : '',\
-                           'status' : 0
+                           'status' : STATUS_WAIT
                            }
-        self.topics = kwargs.get('topics').split(',')
+        self.topics = kwargs.get('topics', '').split(',')
 
     def store(self, r):
         if self.fields.get('uid', '') == '':
@@ -27,6 +32,14 @@ class User_status(redis_serialized.Redis_serialized):
         super(User_status, self).get(r)
         self.topics = r.smembers(self.field_str('topic_set'))
 
+    @staticmethod
+    def set_chat(r, rid, chat_id):
+        r.set('user_status::'+str(rid)+'::chat_id', chat_id)
+
+    @staticmethod
+    def get_chat(r, rid):
+        return r.get('user_status::'+str(rid)+'::chat_id')
+
 
     @staticmethod
     def inter_topics(r, rid1, rid2):
@@ -37,6 +50,17 @@ class User_status(redis_serialized.Redis_serialized):
     def store_conn_status(r, rid, new_status):
         r.set('user_status::'+str(rid)+'::status', new_status)
 
+    @staticmethod
+    def get_conn_status(r, rid):
+        return r.get('user_status::'+str(rid)+'::status')
+
+    @staticmethod
+    def get_rid(r, uid):
+        return r.get('uid_store::'+str(uid))
+
+    @staticmethod
+    def get_uid(r, rid):
+        return r.get('user_status::'+str(rid)+'::uid')
 
 
 def add_user(r, r_id):

@@ -41,7 +41,17 @@ def main():
                 
                 print 'Setting connection status'
                 user_status.User_status.store_conn_status(r, curr_user, STATUS_CONN)
-                user_status.User_status.store_conn_status(r, match, STATUS_CONN)
+                user_status.User_status.store_conn_status(r, rest_users[match_ind], STATUS_CONN)
+
+                c = chat_data.Chat_data(uid_a=curr_user, uid_b=rest_users[match_ind], status=STATUS_CONN)
+                c.store(r)
+
+                print 'setting chatid: ' + str(c.get_id())
+
+                user_status.User_status.set_chat(r, curr_user, c.get_id())
+                user_status.User_status.set_chat(r, rest_users[match_ind], c.get_id())
+
+                
                 print 'Finished setting connection status'
         except KeyboardInterrupt:
             print 'Quitting'
