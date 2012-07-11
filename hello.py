@@ -42,9 +42,23 @@ def gen_id():
 #     if hasattr(session, 'xmpp_conn'):
 #         session.xmpp_conn.disconnect()
 
-@app.route('/')
+@app.route('/chat')
+def chat():
+    session['uniq_id'] = gen_id()
+    return render_template('chatwin.html', uid=session.get('uniq_id', 'abcd'), user=session.get('username', None))
+
+@app.route('/', methods=['GET', 'POST'])
 def hello_world():
-    return render_template('home.html', user=session.get('username', None))
+    if request.method == 'GET':
+        return render_template('home.html')
+    else:
+        session['topics'] = request.form.get('topics', '')
+        session['name'] = request.form.get('name', '')
+        session['gender-self'] = request.form.get('gender-self', '')
+        session['gender-target'] = request.form.get('gender-target', '')
+        session['lat'] = request.form.get('lat', '')
+        session['lng'] = request.form.get('lng', '')
+        return redirect(url_for('chat'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -60,10 +74,6 @@ def logout():
     del session['uniq_id']
     return redirect(url_for('hello_world'))
 
-@app.route('/chat')
-def chat():
-    session['uniq_id'] = gen_id()
-    return render_template('chatwin.html', uid=session.get('uniq_id', 'abcd'), user=session.get('username', None))
 
 @app.route('/sendmsg', methods=['POST'])
 def sendmsg():
@@ -134,7 +144,7 @@ def chatConn():
     if request.form['req'] == 'start':
         rid = user_status.User_status.get_rid(r, uid)
         if rid is None:
-            u = user_status.User_status(uid=uid, gender_self=request.form.get('gender_self', ''), gender_target=request.form.get('gender_target'), lat=request.form.get('lat', ''), lng=request.form.get('lng', ''))
+            u = user_status.User_status(uid=uid, gender_self=session.get('gender-self', ''), gender_target=session.get('gender-target', ''), lat=session.get('lat', ''), lng=session.get('lng', ''))
             u.store(r)
             return 'waiting'
 
@@ -162,27 +172,18 @@ def chatConn():
             chat_data.Chat_data.set_conn_status(r, cid, STATUS_DCON)
             return 'success'
 
-    
+def messageCB(conn, msg):
+    session['r_msg'] = msg.getBody()
+
+### Test handlers        
 
 @app.route('/formtest')
 def formTest():
     topics = request.args.get('topics', '').split(',')
 
-# @app.route('/chatreq', methods = ['POST'] )
-# def chatreq():
-#     new_id = gen_id()
-#     session['uniq_id'] = new_id
-#     id_num = g.r.incr('new_user_id') - 1
-#     g.r.set('id::'+new_id, id_num)
-
-#     g.r.sadd('user::'+id_num+'::')
-    
-    
-                
-
-def messageCB(conn, msg):
-    session['r_msg'] = msg.getBody()
-    
+@app.route('/ttest')
+def template_test():
+    return render_template('test_home.html')
 
         
 if __name__ == "__main__":

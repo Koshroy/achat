@@ -1,46 +1,14 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-
-<link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+{% block head %}
 <link href="{{ url_for('static', filename='chatwin.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
+{% endblock %}
 
-</head>
-
-<body>
-
+{% block content %}
 <div id="change-overlay" class="overlay" style="display: none"></div>
 
+{% block navbar %} {{ super() }} {% endblock %}
 
-<div class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="brand" href="#">SpeedChatting</a>
-      <div class="nav-collapse">
-	<ul class="nav">
-	  <li><a href="{{ url_for('hello_world') }}">Home</a></li>
-	  <li><a href="{{ url_for('login') }}">Login</a></li>
-	  <li class="active"><a href="{{ url_for('chat') }}">Chat</a></li>
-	</ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- <div class="tabbable"> -->
-<!--   <ul class="nav nav-tabs"> -->
-<!--     <li class="active"><a href="#1A" data-toggle="tab">Topics</a></li> -->
-<!--     <li><a href="#1B" data-toggle="tab">Location</a></li> -->
-<!--     <li><a href="#1C" data-toggle="tab">Gender</a></li> -->
-<!--     </ul> -->
-<!--     <div class="tab-content"> -->
-<!--       <div class="tab-pane active" id="1A"> Hello</div> -->
-<!--       <div class="tab-pane" id="1B"> Hello1</div> -->
-<!--       <div class="tab-pane" id="1C"> Hello2</div> -->
-<!--     </div> -->
-<!-- </div> -->
 
 <div class="row">
   <!-- <div class="row"> -->
@@ -78,9 +46,6 @@
   </div>
 </div>
 
-<!-- <br /> -->
-<!-- <br /> -->
-<!-- <br /> -->
 
 <div class="row">
   <div class="offset2 span9" name="userinputdiv" id="userdiv">
@@ -103,5 +68,4 @@
 <script type="text/javascript" src="/static/chatwin.js"></script>
 <!-- <script type="text/javascript" src="/static/test_chatwin.js"></script> -->
 
-</body>
-</html>
+{% endblock %}

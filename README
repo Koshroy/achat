@@ -9,6 +9,9 @@ Current Progress:
 -- Random Webchat Done
 -- Connection negotiation Done
 
+-- Can change chats and look for new person
+-- Can stay in current chat
+
 TODO:
 
 -- Theming
@@ -16,4 +19,5 @@ TODO:
 -- Location matching
 -- Gender matching
 
+-- If a user is waiting to be connected, and it tries to disconnect, the disconnect will fail
 

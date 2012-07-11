@@ -1,5 +1,18 @@
 <!DOCTYPE html>
 <html>
+  <head>
+
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+      <style type="text/css">
+	body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+	}
+      </style>
+      <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet">
+
+  </head>
+
   {% if user %}
   Welcome {{ user }}
   <form id="logoutform" method="post" action="/logout">
@@ -8,4 +21,5 @@
   {% else %}
   You are not <a href="/login">logged in</a>!
   {% endif %}
+  <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.2.min.js') }}"></script>
 </html>

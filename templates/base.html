@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive.css') }}" rel="stylesheet" />
+  {% block head %}
+  {% endblock %}
+</head>
+
+<body>
+
+  {% block content %}
+  {% block navbar %}
+    <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+	<a class="brand" href="#">Let's Chat</a>
+	<div class="nav-collapse">
+	  <ul class="nav">
+	    <li><a href="{{ url_for('hello_world') }}">Home</a></li>
+	    <li><a href="{{ url_for('login') }}">Login</a></li>
+	    <li class="active"><a href="{{ url_for('chat') }}">Chat</a></li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+
+  {% block chatprefs %}
+
+  <div class="row">
+    <div class="offset4 span4">
+      <h3>Chat Preferences</h3>
+      <div class="tabbable">
+	<ul class="nav nav-tabs">
+	  <li class="active"><a href="#general" data-toggle="tab">General</a></li>
+	  <li><a href="#help-tab" data-toggle="tab">Help</a></li>
+	</ul>
+
+	<div class="tab-content">
+	  <div class="tab-pane active" id="general">
+	    <form class="well" id="general-form" action="#">
+	      <div class="control-group">
+		<label for="topic">Topics</label>
+		<div class="controls">
+		  <div class="input-append">
+		    <input type="text" id="topic" placeholder="Ex. Sports"></input>
+		    <button id="add-btn" class="btn"><i class="icon-plus"></i></button>
+		  </div>
+		</div>
+	      </div>
+
+	      <div id="topic-lst-div">
+	      </div>
+
+
+	      <label for="disp-name">Name</label>
+	      <input type="text" id="disp-name"></input>
+
+	      <label for="gender-self">Your Gender</label>
+	      <select id="gender-self">
+		<option>None</option>
+		<option>Male</option>
+		<option>Female</option>
+	      </select>
+
+	      <label for="gender-target">Target Gender</label>
+	      <select id="gender-target">
+		<option>None</option>
+		<option>Male</option>
+		<option>Female</option>
+	      </select>
+
+	      <label class="checkbox inline" for="use-curr-loc">
+		<input type="checkbox" id="use-curr-loc" />Use Current Location
+	      </label>
+
+	      <p></p>
+	      
+	      <div id="spec-loc-div">
+		<label for="spec-loc">Specify Location</label>
+		<input type="text" id="spec-loc" placeholder="San Jose, CA" />
+	      </div>
+	      <p><button id="chat-but" type="submit" class="btn btn-primary">Let's chat!</button></p>
+	    </form>
+	  </div>
+
+	  <div class="tab-pane" id="help-tab">
+	    Find others to chat with that share your interests or your tastes! Fill in as many boxes as you want to match people with similar interests. Remember, every box is optional, so you can look for a chat partner as vague or as specific as you want!
+	  </div>
+	</div>
+    </div>
+  </div>
+
+  <form id="chat-req-form" action="/" method="POST">
+    <input type="hidden" id="chat-topics" name="topics" value="" />
+    <input type="hidden" id="chat-name" name="name" value="" />
+    <input type="hidden" id="chat-gender-self" name="gender-self" value="" />
+    <input type="hidden" id="chat-gender-target" name="gender-target" value="" />
+    <input type="hidden" id="chat-lat" name="lat" value="" />
+    <input type="hidden" id="chat-lng" name="lng" value="" />
+  </form>
+  {% endblock %}
+
+
+
+  {% endblock %}
+</body>
+</html>
+
+    

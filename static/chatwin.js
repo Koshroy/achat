@@ -2,44 +2,53 @@ var callInterval = 200;
 var connected = false;
 var disconnected = false;
 
+var testing = true;
+
 function initFunc()
 {
     $("#chatform").submit(chatpress);
-    setInterval(
-	function()
-	{
-	    if (!connected && !disconnected)
+    if (!testing)
+    {
+	setInterval(
+	    function()
 	    {
-		tryConnect();
-	    }
-	    else if (!disconnected) {
+		if (!connected && !disconnected)
+		{
+		    tryConnect();
+		}
+		else if (!disconnected) {
 
-		$.post("/recvmsg", 
-		       {
-			   uniq_id: $("#uniq_id").val()
-		       },
-		       function(data) {
-			   if (data.msg == 'event')
+		    $.post("/recvmsg", 
 			   {
-			       if (data.text == 'stopped') 
+			       uniq_id: $("#uniq_id").val()
+			   },
+			   function(data) {
+			       if (data.msg == 'event')
 			       {
-				   connected = false;
-				   disconnected = true;
-				   dispStatus("Disconnected.");
+				   if (data.text == 'stopped') 
+				   {
+				       connected = false;
+				       disconnected = true;
+				       dispStatus("Disconnected.");
+				   }
+			       }
+			       else {
+				   if (data.text != '') {
+				       addToChat("Stranger", data.text);
+				   }
 			       }
 			   }
-			   else {
-			       if (data.text != '') {
-				   addToChat("Person 2", data.text);
-			       }
-			   }
-		       }
-		       , 'json');
-	    }
+			   , 'json');
+		}
 
-	},
-	callInterval
-    );
+	    },
+	    callInterval
+	);
+    }
+
+    $("#chatdiv").css("height", (screen.height - 280)+"px");
+    $("#chatdiv").css("overflow", "auto");
+
     
     return true;
 }
@@ -72,10 +81,21 @@ function tryConnect()
 	  );
 }
 
+function showOverlay()
+{
+    $("#change-overlay").css("display", "inline");
+    $("#over-box").css("display", "inline");
+}
+
+function hideOverlay()
+{
+    $("#change-overlay").css("display", "none");
+    $("#over-box").css("display", "none");
+}
+
 function addToChat(id, s)
 {
-    var h = $("#chatarea").html();
-    $("#chatarea").html(h + "<tr><td>"+id+"</td><td>"+s+"</td></tr>");
+    $("#chatarea").append("<tr><td>"+id+"</td><td>"+s+"</td></tr>");
 }
 
 function dispStatus(s)
@@ -85,19 +105,27 @@ function dispStatus(s)
 
 function clearBox()
 {
-    addToChat("Person 1", $("#chatbox").val());
+    addToChat("You", $("#chatbox").val());
     $("#chatbox").val("");
 }
 
 function chatpress()
 {
-    if ($("#chatbox").val() == "") return false;
-    $.post("/sendmsg", 
-	   {
-	       message: $("#chatbox").val(),
-	       uniq_id: $("#uniq_id").val()
-	   }, clearBox, 'text')
-    return false;
+    if (!testing)
+    {
+	if ($("#chatbox").val() == "") return false;
+	if (!connected || disconnected) return false;
+	$.post("/sendmsg", 
+	       {
+		   message: $("#chatbox").val(),
+		   uniq_id: $("#uniq_id").val()
+	       }, clearBox, 'text')
+	return false;
+    }
+    else
+    {
+	clearBox();
+    }
 
 }
 
@@ -126,6 +154,19 @@ function disconnect()
 
 	return false;
     }
+}
+
+function nextChatWin()
+{
+    showOverlay();
+}
+
+function gotoNextChat()
+{
+    disconnect();
+    location.reload();
+    return false;
+    
 }
 
 $(document).ready(initFunc);

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-vanilla.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='home.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='bootstrap/css/bootstrap-responsive-vanilla.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{% block navbar %} {{ super() }} {% endblock %}
+
+  <div class="row"><p></p></div>
+  <!-- {% block chatprefs %} {{ super() }} {% endblock %} -->
+
+
+
+
+  <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.7.2.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap-tab.js') }}"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='home.js') }}"></script>
+{% endblock %}
