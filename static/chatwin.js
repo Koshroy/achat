@@ -129,6 +129,19 @@ function chatpress()
 
 }
 
+function showChatPrefs()
+{
+    $("#next-chat-choices").css("display", "none");
+    $("#chat-prefs").css("display", "inline");
+}
+
+function hideChatPrefs()
+{
+    $("#next-chat-choices").css("display", "inline");
+    $("#chat-prefs").css("display", "none");
+}
+
+
 function disconnect()
 {
     if (connected)

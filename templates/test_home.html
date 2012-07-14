@@ -10,7 +10,11 @@
 {% block navbar %} {{ super() }} {% endblock %}
 
   <div class="row"><p></p></div>
-  <!-- {% block chatprefs %} {{ super() }} {% endblock %} -->
+  <div class="row">
+    <div class="offset4 span4">
+      {% block chatprefs %} {{ super() }} {% endblock %}
+    </div>
+  </div>
 
 
 
